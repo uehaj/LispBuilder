@@ -8,6 +8,5 @@ class Evaluator {
   def eval(exp) {
     return exp.eval(globalEnv)
   }
-  
 
 }  

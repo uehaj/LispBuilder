@@ -33,6 +33,7 @@ class Cons extends LispList {
     def result = new StringBuilder("(")
     def list
     for (list=this; list instanceof LispList; list=list.cdr) {
+      def elem = list.car;
       result << list.car.toString()+(list.cdr == null?"":" ");
     }
     if (list != null) {
@@ -103,10 +104,13 @@ class Cons extends LispList {
         }
         else {
           // 2引数のクロージャは特殊形式とみなして引数を評価しない
-          return entry.call(args, "dummpy_special")
+          return entry.call(args, "no_automatic_eval_arg")
         }
       }
       return entry
+    }
+    else {
+      throw new Error("Undefined function:"+func)
     }
     return func
   }

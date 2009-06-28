@@ -4,14 +4,17 @@ class LispListIterator implements Iterator {
   LispListIterator(LispList list) {
     cursor = list
   }
+
   boolean hasNext() {
     cursor != null
   }
+
   Object next() {
     def result = cursor.car
     cursor = cursor.cdr
     return result
   }
+
   void remove() {
     throw new UnsupportedOperationException("remove not supported");
   }
@@ -34,7 +37,7 @@ class LispList {
       }
     }
 
-    String.metaClass.getIsSymbol = { false }
+    String.metaClass.getIsSymbol = { false } // クラスごとメタクラス設定
 
     String.metaClass.eval = { env ->
       if (delegate.isSymbol) {

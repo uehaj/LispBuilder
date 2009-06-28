@@ -10,7 +10,7 @@ class Functions {
               assert args.size() == 1
               args[0] ? false : true }
 
-      IF = { args, dummy_special -> // eval時に自動評価しない
+      IF = { args, no_automatic_eval_arg ->
         assert args.size() in 2..3
         def cond = args[0].eval(map)
         def thenPart = args[1]
@@ -24,8 +24,15 @@ class Functions {
         return false
       }
 
+      quote = { args, no_automatic_eval_arg ->
+        assert args.size() == 1
+        return args[0]
+      }
+
       TRUE = true
+
       FALSE = false
+
       car = { args ->
               assert args.size() == 1
               args.first }

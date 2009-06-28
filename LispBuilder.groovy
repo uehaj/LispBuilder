@@ -48,7 +48,8 @@ class LispBuilder {
         value = Integer.parseInt(p.substring(1,p.size()))
       }
       else {
-        value.metaClass.getIsSymbol = { true }
+        value = new String(value) // 新しいインスタンスを作ることは必須(intern対策)
+        value.metaClass.getIsSymbol = { true } // インスタンスごとメタクラス設定
       }
       if (readBuffer == null) {
         readBuffer = [value] as LispList

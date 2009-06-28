@@ -53,6 +53,7 @@ println bx.read{->$0
                 println "[6]"
                 }
   */
+assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
 assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
   "(a b c d (e f g h))"
@@ -76,8 +77,6 @@ assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
 assert bx.build{not; ${eq; $1; $1}}.eval() == false
 assert bx.build{not; ${eq; $1; $2}}.eval() == true
-assert bx.build{$1}.eval() == 1
-assert bx.build{$"ABC"}.eval() == "ABC"
 
 assert bx.build{ IF; TRUE; $"it's true" }.eval() == "it's true"
 assert bx.build{ IF; FALSE; $"it's true" }.eval() == false
@@ -86,11 +85,11 @@ assert bx.build{ IF; ${not; TRUE; }; $"it's true" }.eval() == false
 assert bx.build{ IF; TRUE; $1; $2 }.eval() == 1
 assert bx.build{ IF; FALSE; $1; $2 }.eval() == 2
 
-assert bx.build {setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
+assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
 
-
-
+assert bx.build{quote; a}.eval().isSymbol == true
+assert bx.build{quote; $"a"}.eval().isSymbol == false
 
   /*
   //println bx.build{ IF; ${eq; $1; $2}; $"it's true" }.eval()
