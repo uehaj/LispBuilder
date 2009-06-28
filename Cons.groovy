@@ -32,9 +32,14 @@ class Cons extends LispList {
   String toString() {
     def result = new StringBuilder("(")
     def list
+    def set = new HashSet()
     for (list=this; list instanceof LispList; list=list.cdr) {
-      def elem = list.car;
-      result << list.car.toString()+(list.cdr == null?"":" ");
+      if (set.contains(list)) {
+        result << "..."
+        break
+      }
+      set.add(list)
+      result << list.car.toString()+(list.cdr == null?"":" ")
     }
     if (list != null) {
         result << ". " + list.toString();
@@ -92,12 +97,20 @@ class Cons extends LispList {
     return new LispListIterator(this)
   }
 
-  def eval(env) {
-    def func = car
-    def args = cdr
-    def entry = env[func]
+  def applyLambda(lambda, args, env) {
+    def pseudoArgList = lambda.cdr.car
+    def body = lambda.cdr.cdr.car
+    pseudoArgList.eachWithIndex { it, idx ->
+      env[it] = args[idx]
+    }
+    body.eval(env)
+  }
+
+  def apply(func, args, env) {
+    def entry = func.eval(env)
     if (entry != null) {
       if (entry instanceof Closure) {
+        // 関数本体がGroovyのクロージャの場合。
         if (entry.maximumNumberOfParameters != 2) {
           args = args*.eval(env)
           return entry.call(args)
@@ -107,12 +120,24 @@ class Cons extends LispList {
           return entry.call(args, "no_automatic_eval_arg")
         }
       }
+      else if (entry instanceof Cons) {
+        // 関数本体がリストの場合。つまりLambdaの場合。
+        if (entry.car == "lambda" && entry.car.isSymbol == true) {
+          return applyLambda(entry, args, env)
+        }
+      }
       return entry
     }
     else {
-      throw new Error("Undefined function:"+func)
+      throw new Error("Undefined function: "+func)
     }
     return func
+  }
+
+  def eval(env) {
+    def func = car
+    def args = cdr
+    apply(func, args, env)
   }
 
   def eval() {

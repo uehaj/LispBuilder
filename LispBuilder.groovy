@@ -44,7 +44,7 @@ class LispBuilder {
   def getProperty(String p) {
     try {
       def value = p
-      if (p.startsWith('$')) {
+      if (p != '$if' && p.startsWith('$')) {
         value = Integer.parseInt(p.substring(1,p.size()))
       }
       else {

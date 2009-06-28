@@ -64,6 +64,8 @@ assert bx.build{ a; b; c; d; ${e; f; g; h}; i; j; ${ k }; l }.toString() ==
 
 assert bx.build{${a}}.toString() ==
   "((a))"
+assert bx.build{quote; $1;}.toString() ==
+  "(quote 1)"
 
 assert bx.build{
   ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
@@ -78,22 +80,35 @@ assert bx.build{eq; $1; $2}.eval() == false
 assert bx.build{not; ${eq; $1; $1}}.eval() == false
 assert bx.build{not; ${eq; $1; $2}}.eval() == true
 
-assert bx.build{ IF; TRUE; $"it's true" }.eval() == "it's true"
-assert bx.build{ IF; FALSE; $"it's true" }.eval() == false
-assert bx.build{ IF; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
-assert bx.build{ IF; ${not; TRUE; }; $"it's true" }.eval() == false
-assert bx.build{ IF; TRUE; $1; $2 }.eval() == 1
-assert bx.build{ IF; FALSE; $1; $2 }.eval() == 2
+assert bx.build{ $if; TRUE; $"it's true" }.eval() == "it's true"
+assert bx.build{ $if; FALSE; $"it's true" }.eval() == false
+assert bx.build{ $if; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
+assert bx.build{ $if; ${not; TRUE; }; $"it's true" }.eval() == false
+assert bx.build{ $if; TRUE; $1; $2 }.eval() == 1
+assert bx.build{ $if; FALSE; $1; $2 }.eval() == 2
 
 assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
 
 assert bx.build{quote; a}.eval().isSymbol == true
 assert bx.build{quote; $"a"}.eval().isSymbol == false
+assert bx.build{${quote
+                  ${lambda
+                    ${a; b}
+                    ${eq; a; b}}}
+                $1
+                $1 }.eval() == true
+assert bx.build{${quote
+                  ${lambda
+                    ${a; b}
+                    ${eq; a; b}}}
+                $1
+                $2 }.eval() == false
+
 
   /*
-  //println bx.build{ IF; ${eq; $1; $2}; $"it's true" }.eval()
-//assert bx.build{ IF; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
+  //println bx.build{ $if; ${eq; $1; $2}; $"it's true" }.eval()
+//assert bx.build{ $if; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
 //  "it's false"
 
   //println bx.build { ${$1} } 
