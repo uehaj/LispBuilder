@@ -3,29 +3,23 @@ class Evaluator {
   Map special = [:]
 
   Evaluator() {
-    globalEnv.with {
-      eq = {arg-> arg[0]==arg[1] }
-      not = {arg->
-             arg[0] ? false : true }
-    }
-
-    special.'if' = true
-    special.'define' = true
+    Functions.registerPredefined(globalEnv, special)
   }
 
-  def eval(LispList exp) {
-    def func = exp.first
-    def args = exp?.tail
+  def eval(exp) {
+    def func = exp.car
+    def args = exp?.cdr
     def entry = globalEnv[func]
     if (entry != null) {
       if (entry instanceof Closure) {
         if (!special[func]) {
           args = args*.eval()
         }
-        entry.call(args)
+        return entry.call(args)
       }
-      else return entry
+      return entry
     }
+    return func
   }
 
 }  

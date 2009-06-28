@@ -1,4 +1,6 @@
-class LispReader {
+import LispList
+
+class ListReader {
   private LispList readBuffer
 
   def readStart() {
@@ -21,7 +23,7 @@ class LispReader {
           readBuffer = savedReadBuffer
         }
         if (readBuffer == null) {
-          readBuffer = [elem] as LispList
+          readBuffer = [elem] as Cons
         }
         else {
           readBuffer.append_(elem)
@@ -48,14 +50,15 @@ class LispReader {
 
   def getProperty(String p) {
     try {
+      def value = p
       if (p.startsWith('$')) {
-        p = Integer.parseInt(p.substring(1,p.size()))
+        value = Integer.parseInt(p.substring(1,p.size()))
       }
       if (readBuffer == null) {
-        readBuffer = [p] as LispList
+        readBuffer = [value] as Cons
       }
       else {
-        readBuffer.append_(p)
+        readBuffer.append_(value)
       }
     }
     catch (Exception e) {
@@ -64,7 +67,7 @@ class LispReader {
   }
 
   static {
-    println "LispReader initialize"
+    println "ListReader initialize"
 	ExpandoMetaClass.enableGlobally()
 	Integer.metaClass.positive = { it->
       println "it=${it}"
