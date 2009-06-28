@@ -16,11 +16,11 @@ class ListReader {
       if (m == '$') {
         def elem = args[0]
         if (elem instanceof Closure) {
-          def LispList savedReadBuffer = readBuffer
-          readStart()
+          ListReader reader = new ListReader()
+          elem.delegate = reader
+          elem.resolveStrategy = Closure.DELEGATE_FIRST;
           elem.call()
-          elem = readResult()
-          readBuffer = savedReadBuffer
+          elem = reader.readResult()
         }
         if (readBuffer == null) {
           readBuffer = [elem] as Cons
@@ -33,12 +33,12 @@ class ListReader {
         getProperty(m)
         def elem = args[0]
         if (elem instanceof Closure) {
-          def LispList savedReadBuffer = readBuffer
-          readStart()
+          ListReader reader = new ListReader()
+          elem.delegate = reader
+          elem.resolveStrategy = Closure.DELEGATE_FIRST;
           elem.call()
-          def subList = readResult()
-          readBuffer = savedReadBuffer
-          readBuffer.append_(subList)
+          elem = reader.readResult()
+          readBuffer.append_(elem)
         }
         else throw new Error("list syntax error: elem=$elem")
       }

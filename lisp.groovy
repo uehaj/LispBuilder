@@ -71,22 +71,19 @@ assert bx.read{
 assert bx.read {setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
 
-  /*
 assert bx.read{eq; $1; $1}.eval() == true
 assert bx.read{eq; $1; $2}.eval() == false
 assert bx.read{not; ${eq; $1; $2}}.eval() == true
 assert bx.read{$1}.eval() == 1
 assert bx.read{$"ABC"}.eval() == "ABC"
 assert bx.read{TRUE}.eval() == true
-println bx.read{FALSE}.eval().class
+assert bx.read{FALSE}.eval() == false
 assert bx.read{ IF; TRUE; $"it's true" }.eval() == "it's true"
-  */
+
 println bx.read{ IF; FALSE; $"it's true" }.eval()
-/*
 assert bx.read{ IF; ${eq; $1; $2}; $"it's true" }.eval() == false
 assert bx.read{ IF; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
   "it's false"
-*/
 
 
 

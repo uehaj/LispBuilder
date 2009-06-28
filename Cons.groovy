@@ -99,7 +99,7 @@ class Cons extends LispList {
         if (delegate.size() == 0) {
           return null
         }
-        return new Cons(delegate.car(), delegate.cdr() as Cons)
+        return new Cons(delegate.first(), delegate.tail() as Cons)
       }
       else if (c == Cons) {
         return new Cons(delegate[0], delegate[1])
