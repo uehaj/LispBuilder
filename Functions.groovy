@@ -1,31 +1,40 @@
 class Functions {
-  static registerPredefined(Map map, Map special) {
+  static registerPredefined(Map map) {
 
     map.with {
-      eq = { arg -> arg[0]==arg[1] }
-      not = { arg -> arg[0] ? false : true }
-      delegate.'IF' = { arg ->
-//                        this.metaClass.getIsSpecial = { true }
-                        assert arg.size() in 2..3
-                        if (arg[0].eval()) {
-                          return arg[1].eval()
-                        }
-                        else if (arg.size() == 3) {
-                          return arg[2].eval()
-                        }
-                        return false
+      eq = { args ->
+             assert args.size() == 2
+             args[0]==args[1] }
+
+      not = { args ->
+              assert args.size() == 1
+              args[0] ? false : true }
+
+      IF = { args, dummy_special -> // eval時に自動評価しない
+        assert args.size() in 2..3
+        def cond = args[0].eval(map)
+        def thenPart = args[1]
+        if (cond) {
+          return thenPart.eval(map)
+        }
+        else if (args.size() == 3) {
+          def elsePart = args[2]
+          return elsePart.eval(map)
+        }
+        return false
       }
+
       TRUE = true
       FALSE = false
-      car = { arg -> arg.first }
-      cdr = { arg -> arg.tail }
+      car = { args ->
+              assert args.size() == 1
+              args.first }
 
-      
+      cdr = { args ->
+              assert args.size() == 1
+              args.tail }
     }
-    special.with {
-      delegate.'IF' = true
-      define = true
-    }
+
   }
 }
 

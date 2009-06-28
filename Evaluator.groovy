@@ -1,25 +1,13 @@
 class Evaluator {
   Map globalEnv = [:]
-  Map special = [:]
 
   Evaluator() {
-    Functions.registerPredefined(globalEnv, special)
+    Functions.registerPredefined(globalEnv)
   }
 
- def eval(exp, env) {
-    def func = exp.car
-    def args = exp?.cdr
-    def entry = globalEnv[func]
-    if (entry != null) {
-      if (entry instanceof Closure) {
-        if (!special[func]) {
-          args = args*.eval(env)
-        }
-        return entry.call(args)
-      }
-      return entry
-    }
-    return func
+  def eval(exp) {
+    return exp.eval(globalEnv)
   }
+  
 
 }  

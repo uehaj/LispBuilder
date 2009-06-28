@@ -91,28 +91,29 @@ class Cons extends LispList {
     return new LispListIterator(this)
   }
 
-  def eval(env=null) {
-    def evaluator = new Evaluator()
-    return evaluator.eval(this, env)
-  }
-
-  static {
-    println "Cons initialize"
-	ExpandoMetaClass.enableGlobally()
-	List.metaClass.asType = { Class c->
-      if (c == LispList) {
-        if (delegate.size() == 0) {
-          return null
+  def eval(env) {
+    def func = car
+    def args = cdr
+    def entry = env[func]
+    if (entry != null) {
+      if (entry instanceof Closure) {
+        if (entry.maximumNumberOfParameters != 2) {
+          args = args*.eval(env)
+          return entry.call(args)
         }
-        return new Cons(delegate.first(), delegate.tail() as Cons)
+        else {
+          // 2引数のクロージャは特殊形式とみなして引数を評価しない
+          return entry.call(args, "dummpy_special")
+        }
       }
-      else if (c == Cons) {
-        return new Cons(delegate[0], delegate[1])
-      }
+      return entry
     }
-
-    Object.metaClass.eval = {
-      return delegate
-    }
+    return func
   }
+
+  def eval() {
+    def evaluator = new Evaluator()
+    return evaluator.eval(this)
+  }
+
 }

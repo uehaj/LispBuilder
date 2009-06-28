@@ -29,7 +29,7 @@ class LispBuilder {
       }
       if (elem != null) {
         if (readBuffer == null) {
-          readBuffer = [elem, null] as Cons
+          readBuffer = [elem] as LispList
         }
         else {
           readBuffer.append_(elem)
@@ -47,8 +47,11 @@ class LispBuilder {
       if (p.startsWith('$')) {
         value = Integer.parseInt(p.substring(1,p.size()))
       }
+      else {
+        value.metaClass.getIsSymbol = { true }
+      }
       if (readBuffer == null) {
-        readBuffer = [value] as Cons
+        readBuffer = [value] as LispList
       }
       else {
         readBuffer.append_(value)
