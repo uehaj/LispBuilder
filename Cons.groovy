@@ -1,16 +1,21 @@
 class Cons extends LispList {
   private carPart
+
   def getCar() {
     carPart instanceof Closure ? carPart=carPart.call() : carPart
   }
-  def replaceCar(a) {
+
+  def replaceCar_(a) {
     carPart = a
   }
+
   private cdrPart
+
   def getCdr() {
     cdrPart instanceof Closure ? cdrPart=cdrPart.call() : cdrPart
   }
-  def replaceCdr(a) {
+
+  def replaceCdr_(a) {
     cdrPart = a
   }
 
@@ -62,7 +67,7 @@ class Cons extends LispList {
 	  a
 	}
 	else if(this.size() == 1) {
-	  replaceCdr(new Cons(a, null))
+	  replaceCdr_(new Cons(a, null))
 	}
 	else {
 	  cdr.append_(a)
@@ -92,7 +97,7 @@ class Cons extends LispList {
   }
 
   static {
-    println "LispList initialize"
+    println "Cons initialize"
 	ExpandoMetaClass.enableGlobally()
 	List.metaClass.asType = { Class c->
       if (c == LispList) {

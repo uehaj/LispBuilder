@@ -25,16 +25,6 @@
 
 */
 
-class LispBuilder {
-
-  def read(Closure c) {
-    def listReader = new ListReader()
-    c.delegate = listReader
-    c.call()
-    return listReader.readResult()
-  }
-}
-
 def bx = new LispBuilder()
   //assert b.eval{[1+3, 2, [5]]}.toString() == "(4 2 [5] ) "
   /*
@@ -64,26 +54,38 @@ println bx.read{->$0
                 }
   */
 
-assert bx.read{
-  ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e; } }.toString() ==
+assert bx.build{$1}.toString() == "(1)"
+assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
+  "(a b c d (e f g h))"
+assert bx.build{ a; b; c; d; ${e; f; g; h}; i; j; }.toString() ==
+  "(a b c d (e f g h) i j)"
+assert bx.build{ a; b; c; d; ${e; f; g; h}; i; j; ${ k }; l }.toString() ==
+  "(a b c d (e f g h) i j (k) l)"
+
+assert bx.build{${a}}.toString() ==
+  "((a))"
+
+assert bx.build{
+  ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
   '((a (b (c 1 2 3) d) e))'
 
-assert bx.read {setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
+
+
+assert bx.build {setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
 
-assert bx.read{eq; $1; $1}.eval() == true
-assert bx.read{eq; $1; $2}.eval() == false
-assert bx.read{not; ${eq; $1; $2}}.eval() == true
-assert bx.read{$1}.eval() == 1
-assert bx.read{$"ABC"}.eval() == "ABC"
-assert bx.read{TRUE}.eval() == true
-assert bx.read{FALSE}.eval() == false
-assert bx.read{ IF; TRUE; $"it's true" }.eval() == "it's true"
+assert bx.build{eq; $1; $1}.eval() == true
+assert bx.build{eq; $1; $2}.eval() == false
+assert bx.build{not; ${eq; $1; $2}}.eval() == true
+assert bx.build{$1}.eval() == 1
+assert bx.build{$"ABC"}.eval() == "ABC"
+assert bx.build{TRUE}.eval() == true
+assert bx.build{FALSE}.eval() == false
+assert bx.build{ IF; TRUE; $"it's true" }.eval() == "it's true"
 
-println bx.read{ IF; FALSE; $"it's true" }.eval()
-assert bx.read{ IF; ${eq; $1; $2}; $"it's true" }.eval() == false
-assert bx.read{ IF; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
+println bx.build{ IF; FALSE; $"it's true" }.eval()
+assert bx.build{ IF; ${eq; $1; $2}; $"it's true" }.eval() == false
+assert bx.build{ IF; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
   "it's false"
 
-
-
+  //println bx.build { ${$1} } 
