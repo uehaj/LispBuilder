@@ -86,9 +86,9 @@ class Cons extends LispList {
     return new LispListIterator(this)
   }
 
-  def eval() {
+  def eval(env=null) {
     def evaluator = new Evaluator()
-    return evaluator.eval(this)
+    return evaluator.eval(this, env)
   }
 
   static {
