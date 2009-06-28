@@ -5,7 +5,7 @@ class Cons extends LispList {
     carPart instanceof Closure ? carPart=carPart.call() : carPart
   }
 
-  def replaceCar_(a) {
+  void replaceCar_(a) {
     carPart = a
   }
 
@@ -15,7 +15,7 @@ class Cons extends LispList {
     cdrPart instanceof Closure ? cdrPart=cdrPart.call() : cdrPart
   }
 
-  def replaceCdr_(a) {
+  void replaceCdr_(a) {
     cdrPart = a
   }
 
@@ -29,23 +29,34 @@ class Cons extends LispList {
     n==0 ? car : cdr[n-1]
   }
 
-  String toString() {
+  String toStringHelper(HashSet hashSet) {
+    if (hashSet.contains(this)) {
+      return "..."
+    }
+    hashSet.add(this)
     def result = new StringBuilder("(")
     def list
-    def set = new HashSet()
     for (list=this; list instanceof LispList; list=list.cdr) {
-      if (set.contains(list)) {
-        result << "..."
-        break
+      def elem = list.car
+      if (elem instanceof Cons) {
+        result << elem.toStringHelper(hashSet)+(list.cdr == null?"":" ")
       }
-      set.add(list)
-      result << list.car.toString()+(list.cdr == null?"":" ")
+      else {
+        result << elem.toString()+(list.cdr == null?"":" ")
+      }
     }
     if (list != null) {
         result << ". " + list.toString();
     }
     result << ")";
   }
+
+
+  String toString() {
+    def set = new HashSet()
+    return toStringHelper(set)
+  }
+
 
   int size() {
 	if (this.cdr == null) {
@@ -98,9 +109,12 @@ class Cons extends LispList {
   }
 
   def applyLambda(lambda, args, env) {
+println "applyLambda=$lambda"
     def pseudoArgList = lambda.cdr.car
     def body = lambda.cdr.cdr.car
+println "args=$args"
     pseudoArgList.eachWithIndex { it, idx ->
+      println "it=$it, idx=$idx"
       env[it] = args[idx]
     }
     body.eval(env)
@@ -111,13 +125,13 @@ class Cons extends LispList {
     if (entry != null) {
       if (entry instanceof Closure) {
         // 関数本体がGroovyのクロージャの場合。
-        if (entry.maximumNumberOfParameters != 2) {
+        if (entry.maximumNumberOfParameters != 3) {
           args = args*.eval(env)
-          return entry.call(args)
+          return entry.call(args, env)
         }
         else {
-          // 2引数のクロージャは特殊形式とみなして引数を評価しない
-          return entry.call(args, "no_automatic_eval_arg")
+          // 3引数のクロージャは特殊形式とみなして引数を評価しない
+          return entry.call(args, env, "no_automatic_eval_arg")
         }
       }
       else if (entry instanceof Cons) {

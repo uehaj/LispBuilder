@@ -26,33 +26,7 @@
 */
 
 def bx = new LispBuilder()
-  //assert b.eval{[1+3, 2, [5]]}.toString() == "(4 2 [5] ) "
-  /*
-println bx.read{a
-                {b{d}}
-                $0}
 
-println bx.read{$1
-                {$"a b c"}
-                $0}
-
-println bx.read{$0
-                {$"a b c"}
-                $1
-                $2
-                $"abc"
-                $"def"
-                }
-  */
-  /*
-println bx.read{->$0
-                println "[0]" 
-                {->  $1; println "[1]"   }
-                ${-> println "[2]"; a; println "[3]"  }
-                ${-> println "[4]"; b; println "[5]"   }
-                println "[6]"
-                }
-  */
 assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
 assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
@@ -92,6 +66,8 @@ assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
 
 assert bx.build{quote; a}.eval().isSymbol == true
 assert bx.build{quote; $"a"}.eval().isSymbol == false
+assert bx.build{car; ${quote; ${x; y}}}.eval() == 'x'
+assert bx.build{cdr; ${quote; ${x; y}}}.eval().toString() == '(y)'
 assert bx.build{${quote
                   ${lambda
                     ${a; b}
@@ -105,11 +81,28 @@ assert bx.build{${quote
                 $1
                 $2 }.eval() == false
 
+assert bx.build{progn; $1; $2; $3}.eval() == 3
+assert bx.build {${progn; ${setq; a; $77;}; a }}.eval() == 77
 
   /*
-  //println bx.build{ $if; ${eq; $1; $2}; $"it's true" }.eval()
-//assert bx.build{ $if; ${eq; $1; $2}; $"it's true"; $"it's false" }.eval() ==
-//  "it's false"
-
-  //println bx.build { ${$1} } 
+println bx.build {${progn
+  ${setq; neq
+    ${quote
+      ${lambda
+        ${x; y}
+        ${not; ${eq; x; y}}
+      }
+    }
+  }
+  }}.eval()
   */
+
+  println bx.build {${progn
+    ${setq; neq
+                  ${quote
+                    ${lambda
+                      ${x; y}
+                      ${not; ${eq; x; y}}
+                    }
+                  }}}}.eval()
+
