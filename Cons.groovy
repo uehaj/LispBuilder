@@ -109,12 +109,9 @@ class Cons extends LispList {
   }
 
   def applyLambda(lambda, args, env) {
-println "applyLambda=$lambda"
     def pseudoArgList = lambda.cdr.car
     def body = lambda.cdr.cdr.car
-println "args=$args"
     pseudoArgList.eachWithIndex { it, idx ->
-      println "it=$it, idx=$idx"
       env[it] = args[idx]
     }
     body.eval(env)
@@ -124,18 +121,18 @@ println "args=$args"
     def entry = func.eval(env)
     if (entry != null) {
       if (entry instanceof Closure) {
-        // 関数本体がGroovyのクロージャの場合。
+        // 関数本体がGroovyのクロージャの場合。(SUBR)
         if (entry.maximumNumberOfParameters != 3) {
           args = args*.eval(env)
           return entry.call(args, env)
         }
         else {
-          // 3引数のクロージャは特殊形式とみなして引数を評価しない
+          // 3引数のクロージャは特殊形式とみなして引数を評価しない。(FSUBR)
           return entry.call(args, env, "no_automatic_eval_arg")
         }
       }
       else if (entry instanceof Cons) {
-        // 関数本体がリストの場合。つまりLambdaの場合。
+        // 関数本体がリストの場合。つまりLambdaの場合。(EXPR)
         if (entry.car == "lambda" && entry.car.isSymbol == true) {
           return applyLambda(entry, args, env)
         }

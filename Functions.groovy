@@ -41,6 +41,10 @@ class Functions {
               assert args.size() == 1
               args[0].cdr }
 
+      cons = { args, env ->
+               assert args.size() == 2
+               new Cons(args[0], args[1]) }
+
       setq = { args, env, no_automatic_eval_arg ->
                assert args.size() == 2
                env[args[0]] = args[1].eval(env)
@@ -54,7 +58,6 @@ class Functions {
                last
       }
     }
-
   }
 }
 

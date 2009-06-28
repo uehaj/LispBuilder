@@ -68,6 +68,9 @@ assert bx.build{quote; a}.eval().isSymbol == true
 assert bx.build{quote; $"a"}.eval().isSymbol == false
 assert bx.build{car; ${quote; ${x; y}}}.eval() == 'x'
 assert bx.build{cdr; ${quote; ${x; y}}}.eval().toString() == '(y)'
+assert bx.build{cons; $1; $2}.eval().toString() == '(1 . 2)'
+assert bx.build{cons; $1; ${cons; $2; $3}}.eval().toString() == '(1 2 . 3)'
+
 assert bx.build{${quote
                   ${lambda
                     ${a; b}
@@ -82,27 +85,37 @@ assert bx.build{${quote
                 $2 }.eval() == false
 
 assert bx.build{progn; $1; $2; $3}.eval() == 3
-assert bx.build {${progn; ${setq; a; $77;}; a }}.eval() == 77
+assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
-  /*
-println bx.build {${progn
+assert bx.build {progn
   ${setq; neq
     ${quote
       ${lambda
         ${x; y}
         ${not; ${eq; x; y}}
       }
-    }
-  }
-  }}.eval()
-  */
+    }}
+  ${neq; $1; $2}
+}.eval() == true
 
-  println bx.build {${progn
-    ${setq; neq
-                  ${quote
-                    ${lambda
-                      ${x; y}
-                      ${not; ${eq; x; y}}
-                    }
-                  }}}}.eval()
+assert bx.build {progn
+  ${setq; neq
+    ${quote
+      ${lambda
+        ${x; y}
+        ${not; ${eq; x; y}}
+      }
+    }}
+  ${neq; $1; $1}
+}.eval() == false
 
+println bx.build{progn
+  ${setq; nullp;
+    ${quote
+      ${lambda
+        ${x}
+        ${eq; x; ${}}
+      }
+    }}
+  ${nullp; $1}
+}.eval()
