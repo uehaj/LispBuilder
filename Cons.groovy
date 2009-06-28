@@ -38,7 +38,10 @@ class Cons extends LispList {
     def list
     for (list=this; list instanceof LispList; list=list.cdr) {
       def elem = list.car
-      if (elem instanceof Cons) {
+      if (elem == null) {
+        result << "<nil>"
+      }
+      else if (elem instanceof Cons) {
         result << elem.toStringHelper(hashSet)+(list.cdr == null?"":" ")
       }
       else {
@@ -119,6 +122,7 @@ class Cons extends LispList {
 
   def apply(func, args, env) {
     def entry = func.eval(env)
+println "func=$func, args=$args"
     if (entry != null) {
       if (entry instanceof Closure) {
         // 関数本体がGroovyのクロージャの場合。(SUBR)

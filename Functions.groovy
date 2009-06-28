@@ -33,6 +33,10 @@ class Functions {
 
       FALSE = false
 
+      nil = { args, env ->
+              assert args == null
+              null }
+
       car = { args, env ->
               assert args.size() == 1
               args[0].car }
