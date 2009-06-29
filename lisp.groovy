@@ -26,7 +26,7 @@
 */
 
 def bx = new LispBuilder()
-  /*
+
 assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
 assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
@@ -53,7 +53,6 @@ assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
 assert bx.build{not; ${eq; $1; $1}}.eval() == false
 assert bx.build{not; ${eq; $1; $2}}.eval() == true
-
 assert bx.build{ $if; TRUE; $"it's true" }.eval() == "it's true"
 assert bx.build{ $if; FALSE; $"it's true" }.eval() == false
 assert bx.build{ $if; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
@@ -109,7 +108,6 @@ assert bx.build {progn
   ${neq; $1; $1}
 }.eval() == false
 
-*/
   /*
 println bx.build{progn
   ${setq; nullp;
@@ -122,8 +120,3 @@ println bx.build{progn
   ${nullp; $1}
 }.eval()
   */
-
-  //println bx.build{${quote; ${cons; nil; $1}}}.eval().toString()
-println bx.build{cdr ${cons; a; b}}.eval().toString()
-
-

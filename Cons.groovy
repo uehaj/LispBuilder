@@ -122,11 +122,11 @@ class Cons extends LispList {
 
   def apply(func, args, env) {
     def entry = func.eval(env)
-println "func=$func, args=$args"
     if (entry != null) {
       if (entry instanceof Closure) {
-        // 関数本体がGroovyのクロージャの場合。(SUBR)
+        // 関数本体がGroovyのクロージャの場合。
         if (entry.maximumNumberOfParameters != 3) {
+          // 引数を評価する。(SUBR)
           args = args*.eval(env)
           return entry.call(args, env)
         }
