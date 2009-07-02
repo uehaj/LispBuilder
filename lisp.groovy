@@ -114,7 +114,7 @@ assert bx.build {progn
     ${neq; $1; $2}
 }.eval() == true
 
-println bx.build {progn
+assert bx.build {progn
   ${setq; not
     ${quote
       ${lambda
@@ -123,7 +123,18 @@ println bx.build {progn
       }
     }}
     ${not; $1}
-}.eval()
+}.eval() == null
+
+assert bx.build {progn
+  ${setq; not
+    ${quote
+      ${lambda
+        ${x}
+        ${$if; x; FALSE; TRUE}
+      }
+    }}
+    ${not; TRUE}
+}.eval() == null
 
 assert bx.build {progn
   ${setq; neq
@@ -139,7 +150,7 @@ assert bx.build {progn
   }
 }.eval() == true
 
-println bx.build{progn
+assert bx.build{progn
   ${setq; nullp;
     ${quote
       ${lambda
@@ -147,7 +158,10 @@ println bx.build{progn
         ${eq; nil; x}
       }
     }}
-  ${nullp; nil}
-}.eval()
+                ${and;
+                  ${nullp; nil}
+                  ${nullp; FALSE}
+                }
+}.eval() == true
 
 
