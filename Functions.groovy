@@ -1,16 +1,11 @@
 class Functions {
 
-  static Map registerPredefined(Map map = [:]) {
-
+  private static registerClosureFunctions(Map map) {
     map.with {
       eq = { args, env ->
              assert args.size() == 2
-             println "a0 = "+args[0]+" a1 = "+args[1];
+//             println "a0 = "+args[0]+" a1 = "+args[1];
              args[0]==args[1] }
-
-      not = { args, env ->
-              assert args.size() == 1
-              args[0] ? false : true }
 
       $if = { args, env, no_automatic_eval_arg ->
         assert args.size() in 2..3
@@ -33,7 +28,7 @@ class Functions {
 
       TRUE = true
 
-      FALSE = null
+      FALSE = false
 
       nil = null
 
@@ -55,13 +50,19 @@ class Functions {
       }
 
       and =  { args, env ->
-               assert args.size() == 2;
-               args[0] != null && args[1] != null
+               def result = true
+               args.each {
+                 result = result && (it != null) 
+               }
+               result
       }
 
       or =  { args, env ->
-              assert args.size() == 2
-              args[0] != null || args[1] != null
+              def result = false
+              args.each {
+                result = result || (it != null) 
+              }
+              result
       }
 
       progn = {args, env, no_automatic_eval_arg ->
@@ -73,7 +74,34 @@ class Functions {
       }
 
     }
-    return map
   }
+
+  private static registerLambdaFunctions(Map map) {
+    def bx = new LispBuilder()
+    map.with {
+
+      not = bx.build{lambda
+                     ${x}
+                     ${$if; x; FALSE; TRUE}
+      }
+
+      neq = {lambda
+             ${x; y}
+             ${not; ${eq; x; y}}
+      }
+
+      nullp = bx.build {lambda
+                        ${x}
+                        ${eq; nil; x}
+      }
+    }
+  }
+
+  static registerFunctions(Map map = [:]) {
+    registerClosureFunctions(map)
+    registerLambdaFunctions(map)
+    map
+  }
+
 }
 

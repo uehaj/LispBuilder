@@ -160,7 +160,7 @@ class Cons extends LispList {
     return entry
   }
 
-  def eval(env = Functions.registerPredefined()) {
+  def eval(env = Functions.registerFunctions()) {
     def func = car
     def args = cdr
     def result = apply(func, args, env)

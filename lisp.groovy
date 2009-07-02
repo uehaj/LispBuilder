@@ -26,7 +26,7 @@
 */
 
 def bx = new LispBuilder()
-/*
+
 assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
 assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
@@ -71,7 +71,7 @@ assert bx.build{cons; $1; $2}.eval().toString() == '(1 . 2)'
 assert bx.build{cons; $1; ${cons; $2; $3}}.eval().toString() == '(1 2 . 3)'
 assert bx.build{car;${cons; $1; $2}}.eval() == 1
 assert bx.build{cdr;${cons; $1; $2}}.eval() == 2
-*/
+
 assert bx.build{nil}.eval() == null
 assert bx.build{car; ${cdr;${quote; ${$1; $2}}}}.eval() == 2
 
@@ -92,66 +92,66 @@ assert bx.build{progn; $1; $2; $3}.eval() == 3
 
 assert bx.build{and; $1; $2}.eval() == true
 assert bx.build{and; $1; nil}.eval() == false
-assert bx.build{and; nil; nil}.eval() == false
 assert bx.build{and; nil; $1}.eval() == false
+assert bx.build{and; nil; nil}.eval() == false
+assert bx.build{and; $1; $2; $3}.eval() == true
+assert bx.build{and; nil; $2; $3}.eval() == false
+assert bx.build{and; $1; nil; $3}.eval() == false
+assert bx.build{and; $1; $2; nil}.eval() == false
+assert bx.build{and; nil; nil; $3}.eval() == false
+assert bx.build{and; $1; nil; nil}.eval() == false
+assert bx.build{and; nil; $2; nil}.eval() == false
+assert bx.build{and; nil; nil; nil}.eval() == false
 
 assert bx.build{or; $1; $2}.eval() == true
 assert bx.build{or; $1; nil}.eval() == true
-assert bx.build{or; nil; nil}.eval() == false
 assert bx.build{or; nil; $1}.eval() == true
+assert bx.build{or; nil; nil}.eval() == false
+assert bx.build{or; $1; $2; $3}.eval() == true
+assert bx.build{or; nil; $2; $3}.eval() == true
+assert bx.build{or; $1; nil; $3}.eval() == true
+assert bx.build{or; $1; $2; nil}.eval() == true
+assert bx.build{or; nil; nil; $3}.eval() == true
+assert bx.build{or; $1; nil; nil}.eval() == true
+assert bx.build{or; nil; $2; nil}.eval() == true
+assert bx.build{or; nil; nil; nil}.eval() == false
 
 
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
 assert bx.build {progn
-  ${setq; neq
+  ${setq; _not
     ${quote
       ${lambda
-        ${x; y}
-        ${not; ${eq; x; y}}
+        ${x}
+        ${$if; x; nil; TRUE}
       }
     }}
-    ${neq; $1; $2}
+                 ${and
+                   ${not; ${_not; TRUE}}
+                   ${not; ${_not; $1}}
+                   ${not; ${_not; ${_not; FALSE}}}
+                 }
 }.eval() == true
 
 assert bx.build {progn
-  ${setq; not
-    ${quote
-      ${lambda
-        ${x}
-        ${$if; x; FALSE; TRUE}
-      }
-    }}
-    ${not; $1}
-}.eval() == null
-
-assert bx.build {progn
-  ${setq; not
-    ${quote
-      ${lambda
-        ${x}
-        ${$if; x; FALSE; TRUE}
-      }
-    }}
-    ${not; TRUE}
-}.eval() == null
-
-assert bx.build {progn
-  ${setq; neq
+  ${setq; _neq
     ${quote
       ${lambda
         ${x; y}
         ${not; ${eq; x; y}}
       }
     }}
-  ${and; 
-    ${neq; $1; $2}
-    ${neq; $3; nil}
-  }
+                  ${and; 
+                    ${_neq; $1; $2}
+                    ${_neq; $3; nil}
+                    ${not; ${_neq; $1; $1}}
+                    ${not; ${_neq; nil; nil}}
+                  }
 }.eval() == true
 
 assert bx.build{progn
-  ${setq; nullp;
+  ${setq; _nullp;
     ${quote
       ${lambda
         ${x}
@@ -159,8 +159,10 @@ assert bx.build{progn
       }
     }}
                 ${and;
-                  ${nullp; nil}
-                  ${nullp; FALSE}
+                  ${_nullp; nil}
+                  ${_nullp; FALSE}
+                  ${not; ${_nullp; TRUE}}
+                  ${not; ${_nullp; $1}}
                 }
 }.eval() == true
 
