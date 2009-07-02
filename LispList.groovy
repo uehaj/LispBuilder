@@ -40,8 +40,11 @@ class LispList {
     String.metaClass.getIsSymbol = { false } // クラスごとメタクラス設定
 
     String.metaClass.eval = { env ->
-      if (delegate.isSymbol) {
-        return env[delegate]
+      if (delegate.isSymbol) { // シンボルの場合
+        if (env.containsKey(delegate)) {
+          return env[delegate]
+        }
+        throw new Exception("Symbol not found: "+delegate)
       }
       return delegate
     }
@@ -51,6 +54,9 @@ class LispList {
       return delegate
     }
 
+    Object.metaClass.eval = { env ->
+      println "Object=Eval"
+    }
   }
 
 }

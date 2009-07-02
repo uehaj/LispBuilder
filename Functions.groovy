@@ -1,9 +1,11 @@
 class Functions {
-  static registerPredefined(Map map) {
+
+  static Map registerPredefined(Map map = [:]) {
 
     map.with {
       eq = { args, env ->
              assert args.size() == 2
+             println "a0 = "+args[0]+" a1 = "+args[1];
              args[0]==args[1] }
 
       not = { args, env ->
@@ -31,11 +33,9 @@ class Functions {
 
       TRUE = true
 
-      FALSE = false
+      FALSE = null
 
-      nil = { args, env ->
-              assert args == null
-              null }
+      nil = null
 
       car = { args, env ->
               assert args.size() == 1
@@ -54,6 +54,16 @@ class Functions {
                env[args[0]] = args[1].eval(env)
       }
 
+      and =  { args, env ->
+               assert args.size() == 2;
+               args[0] != null && args[1] != null
+      }
+
+      or =  { args, env ->
+              assert args.size() == 2
+              args[0] != null || args[1] != null
+      }
+
       progn = {args, env, no_automatic_eval_arg ->
                def last
                args.each {
@@ -61,7 +71,9 @@ class Functions {
                }
                last
       }
+
     }
+    return map
   }
 }
 

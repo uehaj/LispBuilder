@@ -2,7 +2,11 @@ class Cons extends LispList {
   private carPart
 
   def getCar() {
-    carPart instanceof Closure ? carPart=carPart.call() : carPart
+    if (carPart instanceof Closure) {
+      println "force lazy eval car"
+      carPart=carPart.call()
+    }
+    carPart
   }
 
   void replaceCar_(a) {
@@ -12,7 +16,11 @@ class Cons extends LispList {
   private cdrPart
 
   def getCdr() {
-    cdrPart instanceof Closure ? cdrPart=cdrPart.call() : cdrPart
+    if (cdrPart instanceof Closure) {
+      println "force lazy eval cdr"
+      cdrPart=cdrPart.call()
+    }
+    cdrPart
   }
 
   void replaceCdr_(a) {
@@ -114,6 +122,11 @@ class Cons extends LispList {
   def applyLambda(lambda, args, env) {
     def pseudoArgList = lambda.cdr.car
     def body = lambda.cdr.cdr.car
+    if (args == null && pseudoArgList != null
+        || args != null && pseudoArgList == null
+        || args.size() != pseudoArgList.size()) {
+      throw new Error("Arguments number mismatch: required '$pseudoArgList' but value is '$args'")
+    }
     pseudoArgList.eachWithIndex { it, idx ->
       env[it] = args[idx]
     }
@@ -121,43 +134,37 @@ class Cons extends LispList {
   }
 
   def apply(func, args, env) {
-    def entry = func.eval(env)
-    if (entry != null) {
-      if (entry instanceof Closure) {
-        // 関数本体がGroovyのクロージャの場合。
-        if (entry.maximumNumberOfParameters != 3) {
-          // 引数を評価する。(SUBR)
-          args = args*.eval(env)
-          return entry.call(args, env)
-        }
-        else {
-          // 3引数のクロージャは特殊形式とみなして引数を評価しない。(FSUBR)
-          return entry.call(args, env, "no_automatic_eval_arg")
-        }
-      }
-      else if (entry instanceof Cons) {
-        // 関数本体がリストの場合。つまりLambdaの場合。(EXPR)
-        if (entry.car == "lambda" && entry.car.isSymbol == true) {
-          return applyLambda(entry, args, env)
-        }
-      }
-      return entry
-    }
-    else {
+    if (func instanceof String && !env.containsKey(func)) {
       throw new Error("Undefined function: "+func)
     }
-    return func
+    def entry = func.eval(env)
+    if (entry instanceof Closure) {
+      // 関数本体がGroovyのクロージャの場合。
+      if (entry.maximumNumberOfParameters != 3) {
+        // 引数を評価してクロージャを呼び出す。(SUBR)
+        args = args*.eval(env)
+        return entry.call(args, env)
+      }
+      else {
+        // 3引数のクロージャは特殊形式なので引数を評価せずに呼び出す。(FSUBR)
+        return entry.call(args, env, "no_automatic_eval_arg")
+      }
+    }
+    else if (entry instanceof Cons) {
+      // 関数本体がリストの場合。つまりlambdaの場合。(EXPR)
+      if (entry.car == "lambda" && entry.car.isSymbol == true) {
+        args = args*.eval(env)
+        return applyLambda(entry, args, env)
+      }
+    }
+    return entry
   }
 
-  def eval(env) {
+  def eval(env = Functions.registerPredefined()) {
     def func = car
     def args = cdr
-    apply(func, args, env)
-  }
-
-  def eval() {
-    def evaluator = new Evaluator()
-    return evaluator.eval(this)
+    def result = apply(func, args, env)
+    result
   }
 
 }
