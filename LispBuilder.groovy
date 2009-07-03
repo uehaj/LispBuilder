@@ -41,6 +41,12 @@ class LispBuilder {
     }
   }
 
+  static makeSymbol(s) {
+    def result = new String(s) // 新しいインスタンスを作ることは必須(intern対策)
+    result.metaClass.getIsSymbol = { true } // インスタンスごとメタクラス設定
+    result
+  }
+
   def getProperty(String p) {
     try {
       def value = p
@@ -48,8 +54,7 @@ class LispBuilder {
         value = Integer.parseInt(p.substring(1,p.size()))
       }
       else {
-        value = new String(value) // 新しいインスタンスを作ることは必須(intern対策)
-        value.metaClass.getIsSymbol = { true } // インスタンスごとメタクラス設定
+        value = makeSymbol(value)
       }
       if (readBuffer == null) {
         readBuffer = [value] as LispList

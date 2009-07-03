@@ -167,4 +167,9 @@ class Cons extends LispList {
     result
   }
 
+  def bitwiseNegate() {
+    println "hoge"
+    return { quote }
+  }
+
 }

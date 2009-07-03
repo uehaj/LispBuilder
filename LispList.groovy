@@ -55,7 +55,7 @@ class LispList {
     }
 
     Object.metaClass.eval = { env ->
-      println "Object=Eval"
+      println "Object.eval; ${delegate}"
     }
   }
 

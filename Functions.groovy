@@ -94,6 +94,14 @@ class Functions {
                         ${x}
                         ${eq; nil; x}
       }
+
+      append = bx.build {lambda
+                         ${a; b}
+                         ${$if;
+                           ${nullp; a}
+                           b;
+                           ${cons; ${car; a}; ${append; ${cdr; a}; b}}}
+      }
     }
   }
 

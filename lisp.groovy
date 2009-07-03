@@ -41,6 +41,15 @@ assert bx.build{${a}}.toString() ==
 assert bx.build{quote; $1;}.toString() ==
   "(quote 1)"
 
+def foo(t) {
+  def result = { ${quote; ${$1; $2}} }
+  result.delegate = t;
+  result
+}
+
+assert bx.build{ foo(delegate).call() }.eval().toString() ==
+  "(1 2)"
+
 assert bx.build{
   ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
   '((a (b (c 1 2 3) d) e))'
@@ -116,7 +125,6 @@ assert bx.build{or; $1; nil; nil}.eval() == true
 assert bx.build{or; nil; $2; nil}.eval() == true
 assert bx.build{or; nil; nil; nil}.eval() == false
 
-
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
 assert bx.build {progn
@@ -165,5 +173,21 @@ assert bx.build{progn
                   ${not; ${_nullp; $1}}
                 }
 }.eval() == true
+
+assert bx.build{progn
+  ${setq; _append;
+    ${quote
+      ${lambda
+        ${a; b}
+        ${$if;
+          ${nullp; a}
+          b;
+          ${cons; ${car; a}; ${_append; ${cdr; a}; b}}
+        }
+      }
+    }}
+                 ${_append; ${quote; ${$1; $2}}; ${quote; ${$3; $4}}}
+
+}.eval().toString() == "(1 2 3 4)"
 
 
