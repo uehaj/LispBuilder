@@ -37,10 +37,10 @@ class LispList {
       }
     }
 
-    String.metaClass.getIsSymbol = { false } // クラスごとメタクラス設定
+    String.metaClass.getIsSymbol = { false } /* クラスごとメタクラス設定 */
 
     String.metaClass.eval = { env ->
-      if (delegate.isSymbol) { // シンボルの場合
+      if (delegate.isSymbol) { /* シンボルの場合 */
         if (env.containsKey(delegate)) {
           return env[delegate]
         }

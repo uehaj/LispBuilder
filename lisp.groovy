@@ -47,8 +47,8 @@ def foo(t) {
   result
 }
 
-assert bx.build{ foo(delegate).call() }.eval().toString() ==
-  "(1 2)"
+//assert bx.build{ foo(delegate).call() }.eval().toString() ==
+//  "(1 2)"
 
 assert bx.build{
   ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
@@ -56,7 +56,9 @@ assert bx.build{
 
 assert bx.build{TRUE}.eval() == true
 assert bx.build{FALSE}.eval() == false
+
 assert bx.build{not; FALSE}.eval() == true
+
 assert bx.build{not; TRUE}.eval() == false
 assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
@@ -83,19 +85,6 @@ assert bx.build{cdr;${cons; $1; $2}}.eval() == 2
 
 assert bx.build{nil}.eval() == null
 assert bx.build{car; ${cdr;${quote; ${$1; $2}}}}.eval() == 2
-
-assert bx.build{${quote
-                  ${lambda
-                    ${a; b}
-                    ${eq; a; b}}}
-                $1
-                $1 }.eval() == true
-assert bx.build{${quote
-                  ${lambda
-                    ${a; b}
-                    ${eq; a; b}}}
-                $1
-                $2 }.eval() == false
 
 assert bx.build{progn; $1; $2; $3}.eval() == 3
 
@@ -126,68 +115,5 @@ assert bx.build{or; nil; $2; nil}.eval() == true
 assert bx.build{or; nil; nil; nil}.eval() == false
 
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
-
-assert bx.build {progn
-  ${setq; _not
-    ${quote
-      ${lambda
-        ${x}
-        ${$if; x; nil; TRUE}
-      }
-    }}
-                 ${and
-                   ${not; ${_not; TRUE}}
-                   ${not; ${_not; $1}}
-                   ${not; ${_not; ${_not; FALSE}}}
-                 }
-}.eval() == true
-
-assert bx.build {progn
-  ${setq; _neq
-    ${quote
-      ${lambda
-        ${x; y}
-        ${not; ${eq; x; y}}
-      }
-    }}
-                  ${and; 
-                    ${_neq; $1; $2}
-                    ${_neq; $3; nil}
-                    ${not; ${_neq; $1; $1}}
-                    ${not; ${_neq; nil; nil}}
-                  }
-}.eval() == true
-
-assert bx.build{progn
-  ${setq; _nullp;
-    ${quote
-      ${lambda
-        ${x}
-        ${eq; nil; x}
-      }
-    }}
-                ${and;
-                  ${_nullp; nil}
-                  ${_nullp; FALSE}
-                  ${not; ${_nullp; TRUE}}
-                  ${not; ${_nullp; $1}}
-                }
-}.eval() == true
-
-assert bx.build{progn
-  ${setq; _append;
-    ${quote
-      ${lambda
-        ${a; b}
-        ${$if;
-          ${nullp; a}
-          b;
-          ${cons; ${car; a}; ${_append; ${cdr; a}; b}}
-        }
-      }
-    }}
-                 ${_append; ${quote; ${$1; $2}}; ${quote; ${$3; $4}}}
-
-}.eval().toString() == "(1 2 3 4)"
 
 

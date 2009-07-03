@@ -1,6 +1,6 @@
 class Functions {
 
-  private static registerClosureFunctions(Map map) {
+  private static registerClosureFunctions(map) {
     map.with {
       eq = { args, env ->
              assert args.size() == 2
@@ -9,14 +9,14 @@ class Functions {
 
       $if = { args, env, no_automatic_eval_arg ->
         assert args.size() in 2..3
-        def cond = args[0].eval(map)
+        def cond = args[0].eval(env)
         def thenPart = args[1]
         if (cond) {
-          return thenPart.eval(map)
+          return thenPart.eval(env)
         }
         else if (args.size() == 3) {
           def elsePart = args[2]
-          return elsePart.eval(map)
+          return elsePart.eval(env)
         }
         return false
       }
@@ -73,10 +73,15 @@ class Functions {
                last
       }
 
+      equals = { args, env ->
+                 assert args.size() == 2
+                 args[0].equals(args[1])
+      }
+
     }
   }
 
-  private static registerLambdaFunctions(Map map) {
+  private static registerLambdaFunctions(map) {
     def bx = new LispBuilder()
     map.with {
 
@@ -105,10 +110,9 @@ class Functions {
     }
   }
 
-  static registerFunctions(Map map = [:]) {
+  static registerFunctions(map) {
     registerClosureFunctions(map)
     registerLambdaFunctions(map)
-    map
   }
 
 }

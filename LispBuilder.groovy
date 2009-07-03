@@ -42,8 +42,8 @@ class LispBuilder {
   }
 
   static makeSymbol(s) {
-    def result = new String(s) // 新しいインスタンスを作ることは必須(intern対策)
-    result.metaClass.getIsSymbol = { true } // インスタンスごとメタクラス設定
+    def result = new String(s) /* 新しいインスタンスを作ることは必須(intern対策) */
+    result.metaClass.getIsSymbol = { true } /* インスタンスごとメタクラス設定 */
     result
   }
 

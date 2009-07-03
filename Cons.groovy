@@ -79,7 +79,7 @@ class Cons extends LispList {
   }
 
   LispList plus(LispList a) {
-	if (this.size() == 0) { //この実装の場合ありえない
+	if (this.size() == 0) { /* この実装の場合ありえない */
 	  a
 	}
 	else if(this.size() == 1) {
@@ -90,8 +90,8 @@ class Cons extends LispList {
 	}
   }
 
-  LispList append_(a) {
-	if (this.size() == 0) { //この実装の場合ありえない
+  LispList append_(a) { /* 破壊的append */
+	if (this.size() == 0) { /* この実装の場合ありえない */
 	  a
 	}
 	else if(this.size() == 1) {
@@ -103,8 +103,8 @@ class Cons extends LispList {
   }
 
   boolean equals(LispList a) {
-	if (this.cdr == a.cdr) {
-	  return true
+	if (this.car != a.car) {
+	  return false
 	}
 	if (this.cdr == null && a.cdr != null) {
 	  return false
@@ -112,7 +112,10 @@ class Cons extends LispList {
 	if (this.cdr != null && a.cdr == null) {
 	  return false
 	}
-	return this.cdr == a.cdr
+	if (this.cdr == null && a.cdr == null) {
+      return true
+    }
+    return this.cdr == a.cdr 
   }
 
   Iterator iterator() {
@@ -127,10 +130,11 @@ class Cons extends LispList {
         || args.size() != pseudoArgList.size()) {
       throw new Error("Arguments number mismatch: required '$pseudoArgList' but value is '$args'")
     }
+    def localEnv = new Env(env)
     pseudoArgList.eachWithIndex { it, idx ->
-      env[it] = args[idx]
+      localEnv[it] = args[idx]
     }
-    body.eval(env)
+    body.eval(localEnv)
   }
 
   def apply(func, args, env) {
@@ -139,19 +143,19 @@ class Cons extends LispList {
     }
     def entry = func.eval(env)
     if (entry instanceof Closure) {
-      // 関数本体がGroovyのクロージャの場合。
+      /* 関数本体がGroovyのクロージャの場合。 */
       if (entry.maximumNumberOfParameters != 3) {
-        // 引数を評価してクロージャを呼び出す。(SUBR)
+        /* 引数を評価してクロージャを呼び出す。(SUBR) */
         args = args*.eval(env)
         return entry.call(args, env)
       }
       else {
-        // 3引数のクロージャは特殊形式なので引数を評価せずに呼び出す。(FSUBR)
+        /* 3引数のクロージャは特殊形式なので引数を評価せずに呼び出す。(FSUBR) */
         return entry.call(args, env, "no_automatic_eval_arg")
       }
     }
     else if (entry instanceof Cons) {
-      // 関数本体がリストの場合。つまりlambdaの場合。(EXPR)
+      /* 関数本体がリストの場合。つまりlambdaの場合。(EXPR) */
       if (entry.car == "lambda" && entry.car.isSymbol == true) {
         args = args*.eval(env)
         return applyLambda(entry, args, env)
@@ -160,7 +164,7 @@ class Cons extends LispList {
     return entry
   }
 
-  def eval(env = Functions.registerFunctions()) {
+  def eval(env = new Env()) {
     def func = car
     def args = cdr
     def result = apply(func, args, env)
