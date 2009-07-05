@@ -1,36 +1,6 @@
-/*
-{setq t {quote t}}
-
-{setq null {a -> {eq a nil}}}
-
-{setq append
- {a b -> {if {null a}  b {cons {car a} {append {cdr a} b}}}}}
-
-{setq reverse
-  {x -> {if {null x} x
-	  {append {reverse {cdr x}} {cons {car x} nil}}}}}
-
-{setq not
-  {x -> {if {null x} t nil}}}
-
-{setq or
-  {x y -> {if {not {null x}} t {if {not {null y}} t nil}}}}
-
-{setq fib
-  {n ->
-	{if {or {= n 0} {= n 1}}
-	  1
-	  {+ {fib {- n 1}}
-		{fib {- n 2}}}}}}
-
-(setq x (new "javax.swing.JFrame"))
-(add (contentPane x)
- (new "javax.swing.JLabel" "hello world")))
-(show x)
-
-*/
-
 def bx = new LispBuilder()
+
+// parse S-expressions
 
 assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
@@ -46,25 +16,29 @@ assert bx.build{${a}}.toString() ==
 assert bx.build{quote; $1;}.toString() ==
   "(quote 1)"
 
+// call other method from builder
+
 def foo(t) {
-  def result = { ${quote; ${$1; $2}} }
+  def result = { ${$1; $2} }
   result.delegate = t;
   result
 }
 
-assert bx.build{ foo(delegate).call() }.eval().toString() ==
-  "(1 2)"
+assert bx.build{ a; foo(delegate).call(); b}.toString() ==
+  "(a (1 2) b)"
 
 assert bx.build{
   ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
   '((a (b (c 1 2 3) d) e))'
 
+// Boolean constants and operators
+
 assert bx.build{TRUE}.eval() == true
 assert bx.build{FALSE}.eval() == false
-
 assert bx.build{not; FALSE}.eval() == true
-
 assert bx.build{not; TRUE}.eval() == false
+
+// Compare operator and negate
 assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
 assert bx.build{eq; $"abc"; $"abc"}.eval() == true
@@ -74,6 +48,7 @@ assert bx.build{not; ${eq; $1; $2}}.eval() == true
 assert bx.build{neq; $1; $2}.eval() == true
 assert bx.build{neq; $1; $1}.eval() == false
 
+// Conditional operator
 assert bx.build{IF; TRUE; $"it's true" }.eval() == "it's true"
 assert bx.build{IF; FALSE; $"it's true" }.eval() == false
 assert bx.build{IF; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
@@ -81,6 +56,7 @@ assert bx.build{IF; ${not; TRUE; }; $"it's true" }.eval() == false
 assert bx.build{IF; TRUE; $1; $2 }.eval() == 1
 assert bx.build{IF; FALSE; $1; $2 }.eval() == 2
 
+// Numerical compare operators
 assert bx.build{lt; $1; $1}.eval() == (1 < 1)
 assert bx.build{lt; $1; $2}.eval() == (1 < 2)
 assert bx.build{lt; $2; $1}.eval() == (2 < 1)
@@ -94,30 +70,30 @@ assert bx.build{ge; $1; $1}.eval() == (1 >= 1)
 assert bx.build{ge; $1; $2}.eval() == (1 >= 2)
 assert bx.build{ge; $2; $1}.eval() == (2 >= 1)
 
-
-assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
-  '(setq nullp (a) (eq a nil))'
-
-
+// Check equality
 assert bx.build{eq; ${quote; ${a; b}}; ${quote; ${a; b}}}.eval() == false
 assert bx.build{equal; ${quote; ${a; b}}; ${quote; ${a; b}}}.eval() == true
 assert bx.build{equal; $"abc"; $"abc"}.eval() == true
 assert bx.build{equal; $"abc"; $"abx"}.eval() == false
 
-
+// symbol and string literal
 assert bx.build{quote; a}.eval().isSymbol == true
 assert bx.build{quote; $"a"}.eval().isSymbol == false
+
+// List operation
 assert bx.build{car; ${quote; ${x; y}}}.eval() == 'x'
 assert bx.build{cdr; ${quote; ${x; y}}}.eval().toString() == '(y)'
 assert bx.build{cons; $1; $2}.eval().toString() == '(1 . 2)'
 assert bx.build{cons; $1; ${cons; $2; $3}}.eval().toString() == '(1 2 . 3)'
 assert bx.build{car;${cons; $1; $2}}.eval() == 1
 assert bx.build{cdr;${cons; $1; $2}}.eval() == 2
-
 assert bx.build{nil}.eval() == null
-assert bx.build{car; ${cdr;${quote; ${$1; $2}}}}.eval() == 2
+assert bx.build{car; ${cdr; ${quote; ${$1; $2}}}}.eval() == 2
 
+// progn
 assert bx.build{progn; $1; $2; $3}.eval() == 3
+
+// Logical operators
 
 assert bx.build{and; $1; $2}.eval() == true
 assert bx.build{and; $1; nil}.eval() == false
@@ -154,10 +130,12 @@ assert bx.build{or; TRUE; FALSE}.eval() == true
 assert bx.build{or; FALSE; TRUE}.eval() == true
 assert bx.build{or; TRUE; TRUE}.eval() == true
 
+// bind variable to value
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
 assert bx.build{add; $1; $2}.eval() == 3
 assert bx.build{add; $1; $2; $3}.eval() == 6
-
 assert bx.build{${progn; ${setq; a; $40;}; ${add; a; a} }}.eval() == 80
+
+
 

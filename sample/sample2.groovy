@@ -1,5 +1,7 @@
 def bx = new LispBuilder()
 
+// direct apply lambda expression
+
 assert bx.build{${quote
                   ${lambda
                     ${a; b}
@@ -14,9 +16,11 @@ assert bx.build{${quote
                 $1
                 $2 }.eval() == false
 
+// bind variables to function
+
 assert bx.build {progn
-  ${defun; _not; ${x}
-    ${IF; x; nil; TRUE}}
+                 ${defun; _not; ${x}
+                   ${IF; x; nil; TRUE}}
 
                  ${and
                    ${not; ${_not; TRUE}}
@@ -26,9 +30,8 @@ assert bx.build {progn
 }.eval() == true
 
 assert bx.build {progn
-  ${defun; _neq; ${x; y}
-    ${not; ${eq; x; y}}
-  }
+                 ${defun; _neq; ${x; y}
+                   ${not; ${eq; x; y}}}
 
                   ${and; 
                     ${_neq; $1; $2}
@@ -39,9 +42,9 @@ assert bx.build {progn
 }.eval() == true
 
 assert bx.build{progn
-  ${defun; _nullp; ${x}
-    ${eq; nil; x}
-  }
+                ${defun; _nullp; ${x}
+                  ${eq; nil; x}}
+
                 ${and;
                   ${_nullp; nil}
                   ${not; ${_nullp; FALSE}}
@@ -51,54 +54,32 @@ assert bx.build{progn
 }.eval() == true
 
 assert bx.build{progn
-  ${defun; _append; ${a; b}
-    ${IF;
-      ${nullp; a}
-      b;
-      ${cons; ${car; a}; ${_append; ${cdr; a}; b}}
-    }
-  }
+                ${defun; _append; ${a; b}
+                  ${IF;
+                    ${nullp; a}
+                    b;
+                    ${cons; ${car; a}; ${_append; ${cdr; a}; b}}}}
 
                 ${_append; ${quote; ${$1; $2}}; ${quote; ${$3; $4}}}
 
 }.eval().toString() == "(1 2 3 4)"
 
 assert bx.build{progn
-  ${defun; _reverse; ${x}
-    ${IF
-      ${nullp; x}
-      x
-      ${append
-        ${_reverse
-          ${cdr; x}}
-        ${cons; ${car; x}; nil}}
-    }
-  }
+                ${defun; _reverse; ${x}
+                  ${IF
+                    ${nullp; x}
+                    x
+                    ${append
+                      ${_reverse
+                        ${cdr; x}}
+                      ${cons; ${car; x}; nil}}}}
+
                  ${and
                    ${equal
                      ${_reverse; ${quote; ${$1; $2}}}
                      ${quote; ${$2; $1}}}
                    ${equal
                      ${_reverse; ${quote; ${a; ${c; b}; d}}}
-                     ${quote; ${d; ${c; b}; a}}
-                   }}
+                     ${quote; ${d; ${c; b}; a}}}}
 }.eval() == true
-
-// Fibonacci number by Lazy evaluation
-def zip(a,b) { new Cons(a.car+b.car, {zip(a.cdr, b.cdr)}); }
-fibs = new Cons(0, new Cons(1, {zip(fibs, fibs.cdr)}))
-assert fibs[34] == 5702887
-
-// Fibonacci number by recursive call
-assert bx.build{progn
-  ${defun; fib; ${n}
-    ${IF; ${or; ${equal; n; $1}; ${equal; n; $2}}
-      $1
-      ${add; ${fib; ${add; n; $(-1)}}
-        ${fib; ${add; n; $(-2)}}}}}
-
-  ${fib; $10}
-
-}.eval() == fibs[10]
-
 

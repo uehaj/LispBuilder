@@ -1,5 +1,7 @@
 def bx = new LispBuilder()
 
+// Sqrt by newton method
+
 assert bx.build{${add; $(1.3); $(3.2)} }.eval() == 1.3+3.2
 assert bx.build{${add; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3+3.2+4.2
 assert bx.build{${sub; $(1.3); $(3.2)} }.eval() == 1.3-3.2
@@ -21,7 +23,6 @@ assert bx.build{gt; $(2.2); $(1.1)}.eval() == (2.2 > 1.1)
 assert bx.build{ge; $(1.1); $(1.1)}.eval() == (1.1 >= 1.1)
 assert bx.build{ge; $(1.1); $(2.2)}.eval() == (1.1 >= 2.2)
 assert bx.build{ge; $(2.2); $(1.1)}.eval() == (2.2 >= 1.1)
-
 
 def env1 = new Env()
 bx.build{setq; a; $1}.eval(env1)
