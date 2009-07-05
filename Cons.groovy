@@ -144,7 +144,7 @@ class Cons extends LispList {
       /* 関数本体がGroovyのクロージャの場合。 */
       if (entry.maximumNumberOfParameters != 3) {
         /* 引数を評価してクロージャを呼び出す。(SUBR) */
-        args = args*.eval(env)
+        args = args*.eval(env) as LispList
         return entry.call(args, env)
       }
       else {
@@ -155,7 +155,7 @@ class Cons extends LispList {
     else if (entry instanceof Cons) {
       /* 関数本体がリストの場合。つまりlambdaの場合。(EXPR) */
       if (entry.car == "lambda" && entry.car.isSymbol == true) {
-        args = args*.eval(env)
+        args = args*.eval(env) as LispList
         return applyLambda(entry, args, env)
       }
     }

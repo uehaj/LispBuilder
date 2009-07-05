@@ -67,6 +67,8 @@ assert bx.build{not; FALSE}.eval() == true
 assert bx.build{not; TRUE}.eval() == false
 assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
+assert bx.build{eq; $"abc"; $"abc"}.eval() == true
+assert bx.build{eq; $"abc"; $"abx"}.eval() == false
 assert bx.build{not; ${eq; $1; $1}}.eval() == false
 assert bx.build{not; ${eq; $1; $2}}.eval() == true
 assert bx.build{neq; $1; $2}.eval() == true
@@ -79,8 +81,29 @@ assert bx.build{IF; ${not; TRUE; }; $"it's true" }.eval() == false
 assert bx.build{IF; TRUE; $1; $2 }.eval() == 1
 assert bx.build{IF; FALSE; $1; $2 }.eval() == 2
 
+assert bx.build{lt; $1; $1}.eval() == (1 < 1)
+assert bx.build{lt; $1; $2}.eval() == (1 < 2)
+assert bx.build{lt; $2; $1}.eval() == (2 < 1)
+assert bx.build{le; $1; $1}.eval() == (1 <= 1)
+assert bx.build{le; $1; $2}.eval() == (1 <= 2)
+assert bx.build{le; $2; $1}.eval() == (2 <= 1)
+assert bx.build{gt; $1; $1}.eval() == (1 > 1)
+assert bx.build{gt; $1; $2}.eval() == (1 > 2)
+assert bx.build{gt; $2; $1}.eval() == (2 > 1)
+assert bx.build{ge; $1; $1}.eval() == (1 >= 1)
+assert bx.build{ge; $1; $2}.eval() == (1 >= 2)
+assert bx.build{ge; $2; $1}.eval() == (2 >= 1)
+
+
 assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
+
+
+assert bx.build{eq; ${quote; ${a; b}}; ${quote; ${a; b}}}.eval() == false
+assert bx.build{equal; ${quote; ${a; b}}; ${quote; ${a; b}}}.eval() == true
+assert bx.build{equal; $"abc"; $"abc"}.eval() == true
+assert bx.build{equal; $"abc"; $"abx"}.eval() == false
+
 
 assert bx.build{quote; a}.eval().isSymbol == true
 assert bx.build{quote; $"a"}.eval().isSymbol == false
@@ -135,7 +158,6 @@ assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
 assert bx.build{add; $1; $2}.eval() == 3
 assert bx.build{add; $1; $2; $3}.eval() == 6
-assert bx.build{add; $1}.eval() == 1
 
 assert bx.build{${progn; ${setq; a; $40;}; ${add; a; a} }}.eval() == 80
 

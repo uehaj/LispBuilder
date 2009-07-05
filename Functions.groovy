@@ -5,7 +5,7 @@ class Functions {
 
       eq = { args, env ->
              assert args.size() == 2
-             args[0]==args[1] }
+             args[0].is(args[1]) }
 
       IF = { args, env, no_automatic_eval_arg ->
         assert args.size() in 2..3
@@ -75,13 +75,59 @@ class Functions {
 
       equal = { args, env ->
                 assert args.size() == 2
-                args[0].equals(args[1])
+                args[0] == args[1]
       }
 
+      lt = { args, env ->
+             assert args.size() == 2
+             args[0] < args[1]
+      }
+
+      le = { args, env ->
+             lt.call(args, env) || equal.call(args, env)
+      }
+
+      gt = { args, env ->
+             !le.call(args, env)
+      }
+
+      ge = { args, env ->
+             !lt.call(args, env)
+      }
+
+
       add = { args, env ->
+              assert args.size() >= 2
               def result = 0
               args.each {
                 result += it.eval(env)
+              }
+              result
+      }
+
+      sub = { args, env ->
+              assert args.size() >= 2
+              def result = args[0]
+              args.cdr.each {
+                result -= it.eval(env)
+              }
+              result
+      }
+
+      mul = { args, env ->
+              assert args.size() >= 2
+              def result = args[0]
+              args.cdr.each {
+                result *= it.eval(env)
+              }
+              result
+      }
+
+      div = { args, env ->
+              assert args.size() >= 2
+              def result = args[0]
+              args.cdr.each {
+                result /= it.eval(env)
               }
               result
       }
@@ -98,6 +144,7 @@ class Functions {
                setq.call(new_args, env, "no_automatic_eval_arg")
       }
 
+      // invoke Java(groovy) level method
       call = {args, env ->
               assert args.size() >= 2
               def new_args = []
@@ -105,9 +152,6 @@ class Functions {
                 println "add - ${args[i]}"
                 new_args += args[i]
               }
-              println "a0=${args[0]}"
-              println "a1=${args[1]}"
-              println "na=${new_args}"
               args[0].invokeMethod(args[1], new_args.size()==0 ? null : new_args)
       }
 

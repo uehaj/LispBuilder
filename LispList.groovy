@@ -26,11 +26,6 @@ class LispList {
       return delegate
     }
 
-    Integer.metaClass.eval =
-      Boolean.metaClass.eval = { env ->
-      return delegate
-    }
-
     Object.metaClass.eval = { env ->
       delegate
     }

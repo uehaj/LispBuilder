@@ -17,6 +17,10 @@ class LispBuilder {
     return readResult()
   }
 
+  def eval(env = new Env(), Closure c){
+    build(c).eval(env)
+  }
+
   def invokeMethod(String m, args) {
     try {
       if (m != '$') {
