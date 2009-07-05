@@ -3,8 +3,7 @@ class Cons extends LispList {
 
   def getCar() {
     if (carPart instanceof Closure) {
-      println "force lazy eval car"
-      carPart=carPart.call()
+      carPart = carPart.call()
     }
     carPart
   }
@@ -17,8 +16,7 @@ class Cons extends LispList {
 
   def getCdr() {
     if (cdrPart instanceof Closure) {
-      println "force lazy eval cdr"
-      cdrPart=cdrPart.call()
+      cdrPart = cdrPart.call()
     }
     cdrPart
   }
@@ -172,7 +170,7 @@ class Cons extends LispList {
   }
 
   def bitwiseNegate() {
-    println "hoge"
+    println "bitwiseNegate"
     return { quote }
   }
 

@@ -2,12 +2,12 @@ class Functions {
 
   private static registerClosureFunctions(map) {
     map.with {
+
       eq = { args, env ->
              assert args.size() == 2
-//             println "a0 = "+args[0]+" a1 = "+args[1];
              args[0]==args[1] }
 
-      $if = { args, env, no_automatic_eval_arg ->
+      IF = { args, env, no_automatic_eval_arg ->
         assert args.size() in 2..3
         def cond = args[0].eval(env)
         def thenPart = args[1]
@@ -52,7 +52,7 @@ class Functions {
       and =  { args, env ->
                def result = true
                args.each {
-                 result = result && (it != null) 
+                 result = result && it
                }
                result
       }
@@ -60,7 +60,7 @@ class Functions {
       or =  { args, env ->
               def result = false
               args.each {
-                result = result || (it != null) 
+                result = result || it
               }
               result
       }
@@ -73,11 +73,54 @@ class Functions {
                last
       }
 
-      equals = { args, env ->
-                 assert args.size() == 2
-                 args[0].equals(args[1])
+      equal = { args, env ->
+                assert args.size() == 2
+                args[0].equals(args[1])
       }
 
+      add = { args, env ->
+              def result = 0
+              args.each {
+                result += it.eval(env)
+              }
+              result
+      }
+
+      defun = {args, env, no_automatic_eval_arg ->
+               assert args.size() == 3
+               def sym_lambda = LispBuilder.makeSymbol("lambda");
+               def sym_quote = LispBuilder.makeSymbol("quote");
+               def new_args = [args[0],
+                               [sym_quote,
+                                [ sym_lambda, args[1], args[2] ]  as LispList
+                                ] as LispList
+                               ] as LispList
+               setq.call(new_args, env, "no_automatic_eval_arg")
+      }
+
+      call = {args, env ->
+              assert args.size() >= 2
+              def new_args = []
+              for (int i=2; i<args.size(); i++) {
+                println "add - ${args[i]}"
+                new_args += args[i]
+              }
+              println "a0=${args[0]}"
+              println "a1=${args[1]}"
+              println "na=${new_args}"
+              args[0].invokeMethod(args[1], new_args.size()==0 ? null : new_args)
+      }
+
+      print = {args, env ->
+               args.each {
+                 print it
+               }
+      }
+
+      println = {args, env ->
+                 print.call(args, env)
+                 println ""
+      }
     }
   }
 
@@ -87,10 +130,10 @@ class Functions {
 
       not = bx.build{lambda
                      ${x}
-                     ${$if; x; FALSE; TRUE}
+                     ${IF; x; FALSE; TRUE}
       }
 
-      neq = {lambda
+      neq = bx.build{lambda
              ${x; y}
              ${not; ${eq; x; y}}
       }
@@ -102,10 +145,21 @@ class Functions {
 
       append = bx.build {lambda
                          ${a; b}
-                         ${$if;
+                         ${IF;
                            ${nullp; a}
                            b;
                            ${cons; ${car; a}; ${append; ${cdr; a}; b}}}
+      }
+
+      reverse = bx.build {lambda
+                          ${x}
+                          ${IF
+                            ${nullp; x}
+                            x
+                            ${append
+                              ${reverse
+                                ${cdr; x}}
+                              ${cons; ${car; x}; nil}}}
       }
     }
   }

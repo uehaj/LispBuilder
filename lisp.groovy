@@ -23,6 +23,11 @@
 	  {+ {fib {- n 1}}
 		{fib {- n 2}}}}}}
 
+(setq x (new "javax.swing.JFrame"))
+(add (contentPane x)
+ (new "javax.swing.JLabel" "hello world")))
+(show x)
+
 */
 
 def bx = new LispBuilder()
@@ -47,8 +52,8 @@ def foo(t) {
   result
 }
 
-//assert bx.build{ foo(delegate).call() }.eval().toString() ==
-//  "(1 2)"
+assert bx.build{ foo(delegate).call() }.eval().toString() ==
+  "(1 2)"
 
 assert bx.build{
   ${ a; ${ b; ${ c; $1; $2; $3 }; d }; e } }.toString() ==
@@ -64,12 +69,15 @@ assert bx.build{eq; $1; $1}.eval() == true
 assert bx.build{eq; $1; $2}.eval() == false
 assert bx.build{not; ${eq; $1; $1}}.eval() == false
 assert bx.build{not; ${eq; $1; $2}}.eval() == true
-assert bx.build{ $if; TRUE; $"it's true" }.eval() == "it's true"
-assert bx.build{ $if; FALSE; $"it's true" }.eval() == false
-assert bx.build{ $if; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
-assert bx.build{ $if; ${not; TRUE; }; $"it's true" }.eval() == false
-assert bx.build{ $if; TRUE; $1; $2 }.eval() == 1
-assert bx.build{ $if; FALSE; $1; $2 }.eval() == 2
+assert bx.build{neq; $1; $2}.eval() == true
+assert bx.build{neq; $1; $1}.eval() == false
+
+assert bx.build{IF; TRUE; $"it's true" }.eval() == "it's true"
+assert bx.build{IF; FALSE; $"it's true" }.eval() == false
+assert bx.build{IF; ${not; FALSE; }; $"it's true" }.eval() == "it's true"
+assert bx.build{IF; ${not; TRUE; }; $"it's true" }.eval() == false
+assert bx.build{IF; TRUE; $1; $2 }.eval() == 1
+assert bx.build{IF; FALSE; $1; $2 }.eval() == 2
 
 assert bx.build{ setq; nullp; ${a}; ${eq; a; nil}}.toString() ==
   '(setq nullp (a) (eq a nil))'
@@ -101,6 +109,10 @@ assert bx.build{and; $1; nil; nil}.eval() == false
 assert bx.build{and; nil; $2; nil}.eval() == false
 assert bx.build{and; nil; nil; nil}.eval() == false
 
+assert bx.build{and; FALSE; FALSE}.eval() == false
+assert bx.build{and; TRUE; FALSE}.eval() == false
+assert bx.build{and; TRUE; TRUE}.eval() == true
+
 assert bx.build{or; $1; $2}.eval() == true
 assert bx.build{or; $1; nil}.eval() == true
 assert bx.build{or; nil; $1}.eval() == true
@@ -114,6 +126,16 @@ assert bx.build{or; $1; nil; nil}.eval() == true
 assert bx.build{or; nil; $2; nil}.eval() == true
 assert bx.build{or; nil; nil; nil}.eval() == false
 
+assert bx.build{or; FALSE; FALSE}.eval() == false
+assert bx.build{or; TRUE; FALSE}.eval() == true
+assert bx.build{or; FALSE; TRUE}.eval() == true
+assert bx.build{or; TRUE; TRUE}.eval() == true
+
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
+assert bx.build{add; $1; $2}.eval() == 3
+assert bx.build{add; $1; $2; $3}.eval() == 6
+assert bx.build{add; $1}.eval() == 1
+
+assert bx.build{${progn; ${setq; a; $40;}; ${add; a; a} }}.eval() == 80
 

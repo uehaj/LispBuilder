@@ -101,10 +101,3 @@ assert bx.build{progn
 }.eval() == fibs[10]
 
 
-assert bx.build{progn;
-                 ${defun
-                   dbl
-                   ${x}
-                   ${add; x; x}}
-                 ${dbl; $3}
-}.eval() == 6;

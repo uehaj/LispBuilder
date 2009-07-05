@@ -1,29 +1,6 @@
-class LispListIterator implements Iterator {
-  LispList cursor
-
-  LispListIterator(LispList list) {
-    cursor = list
-  }
-
-  boolean hasNext() {
-    cursor != null
-  }
-
-  Object next() {
-    def result = cursor.car
-    cursor = cursor.cdr
-    return result
-  }
-
-  void remove() {
-    throw new UnsupportedOperationException("remove not supported");
-  }
-}
-
 class LispList {
 
   static {
-    println "Cons initialize"
 	ExpandoMetaClass.enableGlobally()
 	List.metaClass.asType = { Class c->
       if (c == LispList) {
@@ -55,7 +32,7 @@ class LispList {
     }
 
     Object.metaClass.eval = { env ->
-      println "Object.eval; ${delegate}"
+      delegate
     }
   }
 
