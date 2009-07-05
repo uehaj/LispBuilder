@@ -40,4 +40,9 @@ class Env {
   String toString() {
     "local:" + localEnv.toString() + "parent:" + parentEnv.toString()
   }
+
+  def eval(Closure c) {
+    LispBuilder bx = new LispBuilder()
+    return bx.build(c).eval(this)
+  }
 }
