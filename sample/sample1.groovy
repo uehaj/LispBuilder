@@ -130,6 +130,30 @@ assert bx.build{or; TRUE; FALSE}.eval() == true
 assert bx.build{or; FALSE; TRUE}.eval() == true
 assert bx.build{or; TRUE; TRUE}.eval() == true
 
+// Arithmetic operators
+
+assert bx.build{${add; $(1.3); $(3.2)} }.eval() == 1.3+3.2
+assert bx.build{${add; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3+3.2+4.2
+assert bx.build{${sub; $(1.3); $(3.2)} }.eval() == 1.3-3.2
+assert bx.build{${sub; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3-3.2-4.2
+assert bx.build{${mul; $(1.3); $(3.2);} }.eval() == 1.3*3.2
+assert bx.build{${mul; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3*3.2*4.2
+assert bx.build{${div; $(1.3); $(3.2)} }.eval() == 1.3/3.2
+assert bx.build{${div; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3/3.2/4.2
+
+assert bx.build{lt; $(1.1); $(1.1)}.eval() == (1.1 < 1.1)
+assert bx.build{lt; $(1.1); $(2.2)}.eval() == (1.1 < 2.2)
+assert bx.build{lt; $(2.2); $(1.1)}.eval() == (2.2 < 1.1)
+assert bx.build{le; $(1.1); $(1.1)}.eval() == (1.1 <= 1.1)
+assert bx.build{le; $(1.1); $(2.2)}.eval() == (1.1 <= 2.2)
+assert bx.build{le; $(2.2); $(1.1)}.eval() == (2.2 <= 1.1)
+assert bx.build{gt; $(1.1); $(1.1)}.eval() == (1.1 > 1.1)
+assert bx.build{gt; $(1.1); $(2.2)}.eval() == (1.1 > 2.2)
+assert bx.build{gt; $(2.2); $(1.1)}.eval() == (2.2 > 1.1)
+assert bx.build{ge; $(1.1); $(1.1)}.eval() == (1.1 >= 1.1)
+assert bx.build{ge; $(1.1); $(2.2)}.eval() == (1.1 >= 2.2)
+assert bx.build{ge; $(2.2); $(1.1)}.eval() == (2.2 >= 1.1)
+
 // bind variable to value
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
 
