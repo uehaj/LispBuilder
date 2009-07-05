@@ -12,7 +12,8 @@ class LispBuilder {
   def build(Closure c) {
     readStart()
     c.delegate = this
-    c.resolveStrategy = Closure.DELEGATE_FIRST;
+//    c.resolveStrategy = Closure.DELEGATE_FIRST;
+    c.resolveStrategy = Closure.DELEGATE_ONLY;
     c.call()
     return readResult()
   }
