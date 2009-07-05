@@ -1,3 +1,4 @@
+// JFrame sample
 def bx = new LispBuilder()
 
 bx.build{progn
