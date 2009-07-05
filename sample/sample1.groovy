@@ -162,4 +162,14 @@ assert bx.build{add; $1; $2; $3}.eval() == 6
 assert bx.build{${progn; ${setq; a; $40;}; ${add; a; a} }}.eval() == 80
 
 
+// another evaluation form (call eval() method of LispBuilder)
+
+assert bx.eval(){ $1 } == bx.build{ $1 }.eval()
+
+// share environment among evaluations
+
+def env1 = new Env()
+bx.build{setq; a; $1}.eval(env1)
+assert bx.build{a}.eval(env1) == 1
+assert bx.eval(env1){a} == 1
 
