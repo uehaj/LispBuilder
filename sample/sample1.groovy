@@ -1,9 +1,14 @@
 def bx = new LispBuilder()
 
-// parse S-expressions
+// parse atom
 
 assert bx.build{$"ABC"}.toString() == "(ABC)"
 assert bx.build{$1}.toString() == "(1)"
+assert bx.build{$(-1)}.toString() == "(-1)"
+assert bx.build{$(1.3)}.toString() == "(1.3)"
+
+// parse S-expressions
+
 assert bx.build{ a; b; c; d; ${e; f; g; h} }.toString() ==
   "(a b c d (e f g h))"
 assert bx.build{ a; b; c; d; ${e; f; g; h}; i; j; }.toString() ==
@@ -132,6 +137,9 @@ assert bx.build{or; TRUE; TRUE}.eval() == true
 
 // Arithmetic operators
 
+assert bx.build{add; $1; $2}.eval() == 3
+assert bx.build{add; $1; $2; $3}.eval() == 6
+
 assert bx.build{${add; $(1.3); $(3.2)} }.eval() == 1.3+3.2
 assert bx.build{${add; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3+3.2+4.2
 assert bx.build{${sub; $(1.3); $(3.2)} }.eval() == 1.3-3.2
@@ -140,6 +148,8 @@ assert bx.build{${mul; $(1.3); $(3.2);} }.eval() == 1.3*3.2
 assert bx.build{${mul; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3*3.2*4.2
 assert bx.build{${div; $(1.3); $(3.2)} }.eval() == 1.3/3.2
 assert bx.build{${div; $(1.3); $(3.2); $(4.2)} }.eval() == 1.3/3.2/4.2
+
+// Arithmetic compare
 
 assert bx.build{lt; $(1.1); $(1.1)}.eval() == (1.1 < 1.1)
 assert bx.build{lt; $(1.1); $(2.2)}.eval() == (1.1 < 2.2)
@@ -156,9 +166,6 @@ assert bx.build{ge; $(2.2); $(1.1)}.eval() == (2.2 >= 1.1)
 
 // bind variable to value
 assert bx.build{${progn; ${setq; a; $77;}; a }}.eval() == 77
-
-assert bx.build{add; $1; $2}.eval() == 3
-assert bx.build{add; $1; $2; $3}.eval() == 6
 assert bx.build{${progn; ${setq; a; $40;}; ${add; a; a} }}.eval() == 80
 
 // share environment among evaluations
