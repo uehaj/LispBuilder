@@ -133,8 +133,6 @@ class Functions {
       }
 
       defun = {args, env, no_automatic_eval_arg ->
-
-println "args.size()="+args.size()
                assert args.size() == 3
                def sym_lambda = LispBuilder.makeSymbol("lambda");
                def sym_quote = LispBuilder.makeSymbol("quote");

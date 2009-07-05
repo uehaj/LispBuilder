@@ -77,7 +77,7 @@ class Cons extends LispList {
   }
 
   LispList plus(LispList a) {
-	if (this.size() == 0) { /* この実装の場合ありえない */
+	if (this.size() == 0) { /* this condition is impossible in this List implementation */
 	  a
 	}
 	else if(this.size() == 1) {
@@ -88,8 +88,8 @@ class Cons extends LispList {
 	}
   }
 
-  LispList append_(a) { /* 破壊的append */
-	if (this.size() == 0) { /* この実装の場合ありえない */
+  LispList append_(a) { /* destructive append */
+	if (this.size() == 0) { /* this condition is impossible in this List implementation */
 	  a
 	}
 	else if(this.size() == 1) {
@@ -141,19 +141,20 @@ class Cons extends LispList {
     }
     def entry = func.eval(env)
     if (entry instanceof Closure) {
-      /* 関数本体がGroovyのクロージャの場合。 */
+      /* the function is Groovy closure */
       if (entry.maximumNumberOfParameters != 3) {
-        /* 引数を評価してクロージャを呼び出す。(SUBR) */
+        /* evaluate arguments and call the Groovy closure(SUBR) */
         args = args*.eval(env) as LispList
         return entry.call(args, env)
       }
       else {
-        /* 3引数のクロージャは特殊形式なので引数を評価せずに呼び出す。(FSUBR) */
+        /* 3 argument closure means special form,
+           so call without argument evaluation(FSUBR) */
         return entry.call(args, env, "no_automatic_eval_arg")
       }
     }
     else if (entry instanceof Cons) {
-      /* 関数本体がリストの場合。つまりlambdaの場合。(EXPR) */
+      /* the function is list (lambda function). (EXPR) */
       if (entry.car == "lambda" && entry.car.isSymbol == true) {
         args = args*.eval(env) as LispList
         return applyLambda(entry, args, env)

@@ -12,8 +12,8 @@ class LispBuilder {
   def build(Closure c) {
     readStart()
     c.delegate = this
-//    c.resolveStrategy = Closure.DELEGATE_FIRST;
-    c.resolveStrategy = Closure.DELEGATE_ONLY;
+    c.resolveStrategy = Closure.DELEGATE_FIRST;
+//    c.resolveStrategy = Closure.DELEGATE_ONLY;
     c.call()
     return readResult()
   }
@@ -47,8 +47,8 @@ class LispBuilder {
   }
 
   static makeSymbol(s) {
-    def result = new String(s) /* 新しいインスタンスを作ることは必須(intern対策) */
-    result.metaClass.getIsSymbol = { true } /* インスタンスごとメタクラス設定 */
+    def result = new String(s) /* new String instance is reqired (countermasure of 'interned' equality check) */
+    result.metaClass.getIsSymbol = { true } /* set closure through metaclass for instance */
     result
   }
 

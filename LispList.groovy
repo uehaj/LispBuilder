@@ -14,10 +14,10 @@ class LispList {
       }
     }
 
-    String.metaClass.getIsSymbol = { false } /* クラスごとメタクラス設定 */
+    String.metaClass.getIsSymbol = { false } /* set closure through metaclass for class */
 
     String.metaClass.eval = { env ->
-      if (delegate.isSymbol) { /* シンボルの場合 */
+      if (delegate.isSymbol) { /* the String is lisp symbol */
         if (env.containsKey(delegate)) {
           return env[delegate]
         }
