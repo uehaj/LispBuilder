@@ -1,8 +1,8 @@
 class LispList {
 
   static {
-	ExpandoMetaClass.enableGlobally()
-	List.metaClass.asType = { Class c->
+    ExpandoMetaClass.enableGlobally()
+    List.metaClass.asType = { Class c->
       if (c == LispList) {
         if (delegate.size() == 0) {
           return null

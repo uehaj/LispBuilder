@@ -68,49 +68,49 @@ class Cons extends LispList {
 
 
   int size() {
-	if (this.cdr == null) {
-	  1
-	}
-	else {
-	  1 + this.cdr.size()
-	}
+    if (this.cdr == null) {
+      1
+    }
+    else {
+      1 + this.cdr.size()
+    }
   }
 
   LispList plus(LispList a) {
-	if (this.size() == 0) { /* this condition is impossible in this List implementation */
-	  a
-	}
-	else if(this.size() == 1) {
-	  [car, a] as Cons
-	}
-	else {
-	  [car, cdr+a] as Cons
-	}
+    if (this.size() == 0) { /* this condition is impossible in this List implementation */
+      a
+    }
+    else if(this.size() == 1) {
+      [car, a] as Cons
+    }
+    else {
+      [car, cdr+a] as Cons
+    }
   }
 
   LispList append_(a) { /* destructive append */
-	if (this.size() == 0) { /* this condition is impossible in this List implementation */
-	  a
-	}
-	else if(this.size() == 1) {
-	  replaceCdr_(new Cons(a, null))
-	}
-	else {
-	  cdr.append_(a)
-	}
+    if (this.size() == 0) { /* this condition is impossible in this List implementation */
+      a
+    }
+    else if(this.size() == 1) {
+      replaceCdr_(new Cons(a, null))
+    }
+    else {
+      cdr.append_(a)
+    }
   }
 
   boolean equals(LispList a) {
-	if (this.car != a.car) {
-	  return false
-	}
-	if (this.cdr == null && a.cdr != null) {
-	  return false
-	}
-	if (this.cdr != null && a.cdr == null) {
-	  return false
-	}
-	if (this.cdr == null && a.cdr == null) {
+    if (this.car != a.car) {
+      return false
+    }
+    if (this.cdr == null && a.cdr != null) {
+      return false
+    }
+    if (this.cdr != null && a.cdr == null) {
+      return false
+    }
+    if (this.cdr == null && a.cdr == null) {
       return true
     }
     return this.cdr == a.cdr 
