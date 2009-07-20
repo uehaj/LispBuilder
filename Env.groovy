@@ -42,7 +42,17 @@ class Env {
   }
 
   def eval(Closure c) {
-    LispBuilder bx = new LispBuilder()
+    def bx = new LispBuilder()
+    return bx.build(c).eval(this)
+  }
+
+  def eval2(Closure c) {
+    def bx = new LispBuilder2()
+    return bx.build(c).eval(this)
+  }
+
+  def eval3(Closure c) {
+    def bx = new LispBuilder3()
     return bx.build(c).eval(this)
   }
 }

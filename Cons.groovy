@@ -136,6 +136,7 @@ class Cons extends LispList {
   }
 
   def apply(func, args, env) {
+
     if (func instanceof String && !env.containsKey(func)) {
       throw new Error("Undefined function: "+func)
     }

@@ -5,7 +5,23 @@ class Functions {
 
       eq = { args, env ->
              assert args.size() == 2
-             args[0].is(args[1]) }
+             if (args[0] == null && args[1] == null) {
+               return true
+             }
+             if ((args[0] == null && args[1] != null)
+                 ||(args[0] != null && args[1] == null)
+                 ) {
+               return false
+             }
+             if (args[0].class != args[1].class) {
+               return false
+             }
+             if (args[0] instanceof Number
+                 || args[0] instanceof String) {
+               return args[0] == args[1]
+             }
+             args[0].is(args[1])
+      }
 
       IF = { args, env, no_automatic_eval_arg ->
         assert args.size() in 2..3
