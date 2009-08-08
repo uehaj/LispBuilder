@@ -44,7 +44,7 @@ class LispBuilder {
 
   static makeSymbol(s) {
     def result = new String(s) /* new String instance is reqired (countermasure of 'interned' equality check) */
-    result.metaClass.getIsSymbol = { true } /* set closure through metaclass for instance */
+    result.metaClass.isSymbol = true /* set isSymbol property through metaclass for instance */
     result
   }
 

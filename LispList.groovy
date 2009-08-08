@@ -14,7 +14,7 @@ class LispList {
       }
     }
 
-    String.metaClass.getIsSymbol = { false } /* set closure through metaclass for class */
+    String.metaClass.isSymbol = false /* set closure through metaclass for class */
 
     String.metaClass.eval = { env ->
       if (delegate.isSymbol) { /* the String is lisp symbol */
