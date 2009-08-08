@@ -12,9 +12,7 @@ assert bx.build{progn
                     $1
                     ${add; ${fib; ${add; n; $(-1)}}
                       ${fib; ${add; n; $(-2)}}}}}
-
                 ${fib; $10}
-
 }.eval() == fibs[10]
 
 

@@ -5,7 +5,7 @@ class Functions {
 
       eq = { args, env ->
              assert args.size() == 2
-             if (args[0] == null && args[1] == null) {
+             if (args[0].is(args[1])) {
                return true
              }
              if ((args[0] == null && args[1] != null)
@@ -20,7 +20,7 @@ class Functions {
                  || args[0] instanceof String) {
                return args[0] == args[1]
              }
-             args[0].is(args[1])
+             return false
       }
 
       IF = { args, env, no_automatic_eval_arg ->
